@@ -84,9 +84,25 @@ public final class Sub extends Super {
 
 
 
-이 프로그램이 instance를 두번 출력 할것 같지만 첫번재는 ㅜull을 출력한다. 하위클래스의 생성자가 인스턴스 필드를 초기화 하기도 전에 overrideMe를 호출 하기 때문이다.
+이 프로그램이 instance를 두번 출력 할것 같지만 첫번재는 null을 출력한다. 하위클래스의 생성자가 인스턴스 필드를 초기화 하기도 전에 overrideMe를 호출 하기 때문이다.
 
 
 
 ### Cloneable과 Serializable
+
+ cloneable과 serializable 인터페이스는 상속에 어려움을 더해준다. 둘중 하나라도 구현한 클래스를 상속할 수 있게 설계하는 것은 일반적으로 좋지 않은 생각이다. 이 아이템들은 아이템 13(cloneable)과 86(serializable)에서 설명된다.
+
+ clone과 readObject 메서드는 생성자와 비슷한 효과를 낸다. 새로운 객체를 만들기 때문에 이들을 구현할 때 따르는 제약도 생성좌와 비슷하다는 점에서 주의하자. **clone과 readObject 모두 직접적으로든 간접적으로든 재정의 메서드를 호출해선 안된다.**
+
+ Serializable을 구현한 상속용 클래스가 readResolve나 writeReplace메서드를 갖는다면 이 메서드들은 private이 아닌 prortected로 선언해야 한다. private로 선언하면 하위 클래스에서 무시되기 때문이다.
+
+
+
+### 일반적인 구체 클래스
+
+ 일반적인 구체 클래스의 상속과 관련해서는 **상속용으로 설계되지 않은 클래스는 상속을 금지하는 것이 좋다.** 상속을 금지하는 방법은 둘중 더 쉬운 쪽은 클래스를 final로 선언하는 방법이다. 다른 하나는 모든 생성자를 private이나 package-private로 선언하고 public 정적 팩터리 매서드를 만드는 방법이다. 
+
+  
+
+
 
