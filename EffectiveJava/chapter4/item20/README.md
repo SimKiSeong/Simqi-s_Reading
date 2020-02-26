@@ -77,6 +77,8 @@ public interface SingerSongwriter extends Singer, Songwriter{
 
  관례상 인터페이스 이름이 Interface라면 골격 구현 클래스의 이름은 AbstractInterface로 짓는다. Skeletal이 더 어울릴지 모르지만 Abstract가 붙는 것이 확고히 자리를 잡았다. 제대로 설계했다면 골격 구현은 그 인터페이스 나름의 구현을 만들려는 프로그래머의 일을 상당히 덜어준다.
 
+골격구현을 사용해 완성한 구체 클래스
+
  ~~~java
 public class IntArrays {
     static List<Integer> intArrayAsList(int[] a) {
@@ -115,6 +117,63 @@ public class IntArrays {
 
 
 
+골격클래스의 아름다움은 추상클래스처럼 구현을 도와주는 동시에 추상 클래스로 타입을 정의할 때 따라오는 심각한 제약에서는 자유로움에 있다. 골격구현을 확장하므로 추상클래스를 구현할 수 있지만, 상황이 여의치 못하면 인터페이스를 직접 구현해야한다.
+
+시뮬레이티드 다중상속
+
+인터페이스를 구현한 클래스에서 해당 골격 구현을 확장한 private 내부 클래스를 정의하고 각 메서드의 호출은 내부 클래스의 인스턴스에 전달하는 방법(아이템 18의 래퍼클래스 비슷) 이 있는데, 다중상속의 많은 장점을 제공하는 동시에 단점은 피하게 해준다.
+
+
+
+골격구현 작성은 인터페이스를 잘 살펴 다른 메서드르의 구현에 상용되는 기반 메서드를 선정한다. ( 이 메서드들은 골격구현에서 추상 메소드가 될것이다.) 그 다음으로 기반 메서드를 사용해 사용자가 직접 구현할 수 있는 메서드를 모두 디폴트 메서드로 제공한다. 단 equals, hashCode, Object와 같은 애들은 디폴트로 제공하면 안된다.
+
+
+
+추상 골격 구현 클래스
+
+~~~java
+public abstract class AbstractMapEntry<K,V>
+        implements Map.Entry<K,V> {
+    // 변경 가능한 엔트리는 이 메서드를 반드시 재정의해야 한다.
+    @Override public V setValue(V value) {
+        throw new UnsupportedOperationException();
+    }
+    
+    // Map.Entry.equals의 일반 규약을 구현한다.
+    @Override public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Map.Entry))
+            return false;
+        Map.Entry<?,?> e = (Map.Entry) o;
+        return Objects.equals(e.getKey(),   getKey())
+                && Objects.equals(e.getValue(), getValue());
+    }
+
+    // Map.Entry.hashCode의 일반 규약을 구현한다.
+    @Override public int hashCode() {
+        return Objects.hashCode(getKey())
+                ^ Objects.hashCode(getValue());
+    }
+
+    @Override public String toString() {
+        return getKey() + "=" + getValue();
+    }
+}
+~~~
+
+
+
+
+
+---
+
+## 그 외
+
+
+
+골격 구현은 기본적으로 상속해서 사용하는 걸 가정하므로 상속할때 해야하는 일들을 모두 잘 해야한다.
+
 
 
 ---
@@ -125,9 +184,6 @@ public class IntArrays {
 
 ### 추상클래스
 
+특징이 비슷한 클래스들의 특징을 모아 상속하게 만들어 쓰게 하는 클래스
 
-
-
-
-### 디폴트 메서드
-
+추상클래스의 장점 -> 인터페이스에 메서드를 추가하면 오류가 나는데 추상클래스는 매서드를 추가할 수 있다. 하지만 이것두 옛말이 되어 버렸다. default를 사용하게 되면 인터페이스도 메서드를 추가 할 수 있다.
